@@ -1,0 +1,95 @@
+Criar banco de dados no docker:
+docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=@Fiap2tdsps2024 -p 3306:3306 -d mysql:latest
+
+---------------------------------------------------------------------------------------------------------------------------
+
+Conectar intelij ao BD
+spring.application.name=simulado
+spring.datasource.url=jdbc:mysql://localhost:3306/dbSimulado
+spring.datasource.username=root
+spring.datasource.password=@Fiap2tdsps2024
+
+
+spring.datasource.initialization-mode=
+spring.datasource.driver-class-name= com.mysql.cj.jdbc.Driver
+spring.jpa.hibernate.ddl-auto=update
+server.port=8080
+
+---------------------------------------------------------------------------------------------------------------------------
+
+UPDATE
+    @PutMapping("/update/{id}")
+    public Owner updateOwner(@RequestBody Owner ownerRequest, @PathVariable int id) {
+        Owner owner = ownerRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Owner não encontrado"));
+        owner.setEmail(ownerRequest.getEmail());
+        owner.setName(ownerRequest.getName());
+        
+        return ownerRepository.save(owner);
+
+    }
+
+---------------------------------------------------------------------------------------------------------------------------
+
+DELETE
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteOwner(@PathVariable int id) {
+        ownerRepository.deleteById(id);
+        return ResponseEntity.ok("Deletado com sucesso!");
+    }
+
+---------------------------------------------------------------------------------------------------------------------------
+
+Consulta Filtradas
+-No repository
+Optional<Owner> findByName(String name);
+
+@Query(nativeQuery = true, value= "SELECT * FROM owners WHERE email = :email")
+Optional<Owner> findByEmail(String email);
+
+-No controller
+    @GetMapping("/getByEmail/{email}")
+    public Optional<Owner> getOwnerByEmail(@PathVariable String email) {
+        Optional<Owner> outOwner = ownerRepository.findByEmail(email);
+
+        return outOwner;
+    }
+
+    @GetMapping("/getByName/{name}")
+    public Optional<Owner> getOwnerByName(@PathVariable String name) {
+        Optional<Owner> outOwner = ownerRepository.findByName(name);
+
+        return outOwner;
+    }
+
+---------------------------------------------------------------------------------------------------------------------------
+
+-Implemente uma entidadade adicional
+
+package com.javaadvanced.simulado.entity;
+
+import jakarta.persistence.*;
+import lombok.Data;
+
+@Data
+@Entity
+@Table(name = "address")
+public class Address {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    private String rua;
+    private String cep;
+    private String cidade;
+
+    @OneToOne(mappedBy = "address")
+    private Owner owner;
+}
+
+-Adicionar a entity Owner
+ 	@OneToOne
+    private Address address;
+
+---------------------------------------------------------------------------------------------------------------------------
+
