@@ -1,6 +1,0 @@
-br\com\javamysql\service\UserService.class
-br\com\javamysql\controller\UserController.class
-br\com\javamysql\repository\UserRepository.class
-br\com\javamysql\service\UserServiceImpl.class
-br\com\javamysql\entity\User.class
-br\com\javamysql\JavaMysqlApplication.class
